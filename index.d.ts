@@ -28,6 +28,7 @@ declare module 'web3' {
             getAccounts(callback: (err: Error, value: any) => void): string[];
             sendTransaction(txData: any, callback: (err: Error, value: any) => void): void;
             getTransactionReceipt(txHash: string, callback: (err: Error, receipt: any) => void): void;
+            estimateGas(txData: any, callback: (err: Error, gas: number) => void): void;
         };
 
         public setProvider(provider: Web3.Provider): void;
@@ -75,7 +76,19 @@ declare module 'web3' {
             type: string;
         }
 
+        interface NewContractOptions {
+            from?: string,
+            data?: string,
+            gas?: number
+        }
+
         interface Contract<A> {
+            allEvents(filter?: any[], callback?: Function),
+            abi: A,
+            transactionHash: string,
+            address: string;
+            // if new function is not defined as a property it fails to compile
+            new: (options: NewContractOptions, callback: (err: Error, contract: Contract<A>) => {}) => Contract<A>;
             at(address: string): A;
         }
 
