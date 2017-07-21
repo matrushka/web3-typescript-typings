@@ -3,6 +3,8 @@ declare module 'web3' {
     import * as BigNumber from 'bignumber.js';
 
     class Web3 {
+        constructor(provider?: Web3.Provider);
+
         public static providers: typeof providers;
 
         public version: {
@@ -31,6 +33,7 @@ declare module 'web3' {
             estimateGas(txData: any, callback: (err: Error, gas: number) => void): void;
         };
 
+        public reset(keepIsSyncing: boolean): void;
         public setProvider(provider: Web3.Provider): void;
         public currentProvider: Web3.Provider;
         public fromWei(amount: number|BigNumber.BigNumber, unit: string): BigNumber.BigNumber;
@@ -41,6 +44,8 @@ declare module 'web3' {
     namespace providers {
         class HttpProvider implements Web3.Provider {
             constructor(url?: string);
+            send(call: Object): any;
+            sendAsync(call: Object, callback: (err: Error, res: any) => void);
         }
     }
 
@@ -84,12 +89,12 @@ declare module 'web3' {
 
         interface Contract<A> {
             allEvents(filter?: any[], callback?: Function),
-            abi: A,
+            abi: Web3.ContractAbi,
             transactionHash: string,
             address: string;
             // if new function is not defined as a property it fails to compile
-            new: (options: NewContractOptions, callback: (err: Error, contract: Contract<A>) => {}) => Contract<A>;
-            at(address: string): A;
+            new: (...args: any[]) => Contract<A>;
+            at(address: string): Contract<A>;
         }
 
         interface FilterObject {
@@ -111,7 +116,10 @@ declare module 'web3' {
             stopWatching(callback: () => void): void;
         }
 
-        interface Provider {}
+        interface Provider {
+            send(call: Object): any;
+            sendAsync(call: Object, callback: (err: Error, res: any) => void): any;
+        }
     }
     /* tslint:disable */
     export = Web3;
